@@ -1,0 +1,269 @@
+/* Hamdan Esmail. One face (Bricolage Grotesque), one base ground (warm black), and nine worlds that each bring their own. */
+:root {
+  --bg: #0c0a08;
+  --surface: #181512;
+  --ink: #ffffff;
+  --muted: #a39d96;
+  --accent: #c9a45a;
+  --accent-ink: #0c0a08;
+  --bone: #f1f0ed;
+  --step-small: 0.9375rem;
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.375rem, 1.1rem + 0.9vw, 1.875rem);
+  --step-head: clamp(2.5rem, 5vw, 4.5rem);
+  --step-name: 13vw;
+  --margin: 32px;
+  --frame-h: min(29vw, calc(100svh - 28vw - 130px));
+  --frame-w: calc(var(--frame-h) * 1.6);
+  --gap: 20px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-reveal: 800ms;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+html.js { scroll-snap-type: y proximity; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-size: var(--step-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 20; padding: 12px 18px; background: var(--ink); color: var(--bg); font-weight: 500; }
+.skip:focus { top: 16px; }
+
+/* ---------- The pinned run. The name holds its two corners; each world rises through it like a curtain. */
+.run { position: relative; }
+/* One step of scrolling per world after the first; the script sets --steps from the number of worlds. */
+.js .run { height: calc(100vh + var(--steps, 8) * 55svh); height: calc(100dvh + var(--steps, 8) * 55svh); }
+/* One invisible stop per world, so the scroll settles on a whole world. */
+.snap { position: absolute; left: 0; width: 100%; height: 55svh; pointer-events: none; scroll-snap-align: start; }
+.stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: #191410; }
+.skin {
+  --field: #191410;
+  --field-ink: #ffffff;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 18px var(--margin) 22px;
+  background: var(--field);
+  color: var(--field-ink);
+}
+.skin.other { clip-path: inset(100% 0 0 0); }
+
+h1, .h1 { display: contents; margin: 0; font: inherit; }
+.word { display: block; font-size: var(--step-name); font-weight: 600; letter-spacing: -0.055em; line-height: 0.85; white-space: nowrap; }
+.word.a { grid-area: 1 / 1; margin-left: -0.04em; }
+.word.b { grid-area: 3 / 2; align-self: end; margin: 0 -0.02em -0.06em 0; text-align: right; }
+.nav { grid-area: 1 / 2; align-self: start; justify-self: end; display: flex; gap: 28px; align-items: center; padding-top: 6px; font-size: var(--step-small); }
+.nav a { text-decoration: none; padding: 10px 0; }
+.nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.band { grid-area: 2 / 1 / 3 / -1; display: grid; grid-template-columns: minmax(0, 1.3fr) var(--frame-w) minmax(0, 0.7fr); gap: 40px; min-height: 0; }
+.say { grid-area: 3 / 1; align-self: end; margin: 0 0 6px; max-width: 24ch; font-size: var(--step-lead); font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; }
+.say small { display: block; margin-top: 10px; font-size: var(--step-small); font-weight: 400; letter-spacing: 0; line-height: 1.4; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  background: var(--field-ink, var(--ink));
+  color: var(--field, var(--bg));
+  font: inherit;
+  font-weight: 500;
+  font-size: var(--step-small);
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: transform var(--t-press) var(--ease-out);
+}
+.nav a.btn { padding: 0 22px; }
+.btn:hover { transform: translateY(-2px); text-decoration: none; }
+.btn:active { transform: translateY(1px) scale(0.98); }
+
+.window { position: relative; height: 100%; min-height: 0; overflow: hidden; }
+.reel { display: flex; flex-direction: column; gap: var(--gap); will-change: transform; }
+.frame { position: relative; display: block; flex: none; width: 100%; height: var(--frame-h); overflow: hidden; border-radius: 4px; background: var(--surface); }
+.frame img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 500ms var(--ease-out); }
+.frame:hover img { transform: scale(1.03); }
+.js .cap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* The guide stands at the foot of this column; what he says sits above his head. */
+.now { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; min-height: 0; }
+.bubble { position: relative; max-width: 330px; margin-bottom: 20px; padding: 18px 20px 20px; background: var(--field-ink); color: var(--field); transform-origin: 80px 100%; }
+.bubble::before, .bubble::after { content: ""; position: absolute; background: inherit; }
+.bubble::before { left: 78px; bottom: -10px; width: 16px; height: 10px; }
+.bubble::after { left: 86px; bottom: -18px; width: 8px; height: 8px; }
+.now-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.now-name { margin: 0; font-size: var(--step-lead); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+.now-line { position: relative; margin: 8px 0 16px; line-height: 1.4; }
+.unsaid { visibility: hidden; }
+/* Three small dots that bounce only while he is speaking. */
+.dots { display: flex; gap: 4px; flex: none; opacity: 0; transition: opacity var(--t-hover) var(--ease-out); }
+.dots i { display: block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.bubble.speaking .dots { opacity: 1; }
+.bubble .btn { background: var(--field); color: var(--field-ink); }
+.js .skin.cur .bubble.wait { opacity: 0; }
+.guide-slot { flex: none; width: 200px; height: min(216px, 24svh); }
+.guide-layer { position: absolute; z-index: 5; pointer-events: none; visibility: hidden; }
+.guide-layer canvas { position: absolute; display: block; transform-origin: 50% 97%; pointer-events: auto; cursor: pointer; }
+.guide-layer canvas[hidden] { display: none; }
+.guide-ground { position: absolute; left: 27%; bottom: 2.5%; width: 46%; height: 6%; border-radius: 50%; background: #000000; opacity: 0.2; }
+.guide-3d { inset: 0; width: 100%; height: 100%; }
+.guide-2d { left: 50%; bottom: 3%; height: 90%; aspect-ratio: 14 / 20; margin-left: calc(var(--guide-h, 200px) * -0.315); image-rendering: pixelated; }
+
+.select { align-self: center; justify-self: end; list-style: none; margin: 0; padding: 0; }
+.select a, .select button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--t-hover) var(--ease-out);
+}
+.select i { display: block; width: 10px; height: 10px; background: currentColor; opacity: 0; transform: scale(0.6); transition: transform var(--t-hover) var(--ease-out), opacity var(--t-hover) var(--ease-out); }
+.select button:hover { transform: translateX(-6px); }
+.select button[aria-current="true"] { font-weight: 600; transform: translateX(-14px); }
+.select button[aria-current="true"] i { opacity: 1; transform: scale(1); }
+/* On a phone the nine names would run off the side, so two buttons and a count stand in for the list. */
+.pager { display: none; }
+
+/* ---------- About: the words on the left, the portrait holding its place on the right. */
+.about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; padding: 18vh var(--margin) 20vh; background: var(--bg); color: var(--ink); }
+.about-text { grid-column: 1 / span 6; }
+.about h2 { margin: 0 0 40px; font-size: var(--step-head); font-weight: 600; letter-spacing: -0.045em; line-height: 0.95; }
+.about h3 { margin: 56px 0 22px; font-size: var(--step-lead); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+.about p { margin: 0 0 22px; max-width: 46ch; }
+.about .statement { max-width: 30ch; margin-bottom: 36px; font-size: var(--step-lead); font-weight: 500; letter-spacing: -0.02em; line-height: 1.25; }
+.facts { margin: 56px 0 0; display: grid; gap: 18px; }
+.facts.journey { margin-top: 0; }
+.facts div { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; align-items: baseline; }
+.facts dt { color: var(--muted); }
+.journey dt { font-variant-numeric: tabular-nums; }
+.facts dd { margin: 0; max-width: 40ch; }
+.facts a { text-underline-offset: 4px; }
+.about-photo { grid-column: 8 / span 5; align-self: start; position: sticky; top: 9vh; margin: 0; perspective: 1100px; }
+.about-photo .tilt { overflow: hidden; aspect-ratio: 4 / 5; background: var(--surface); transition: transform 500ms var(--ease-out); will-change: transform; }
+.about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 74% 40%; }
+
+/* ---------- The close: an invitation over the cropped name. */
+.close { position: relative; min-height: 100vh; min-height: 100svh; overflow: hidden; background: var(--bone); color: var(--bg); padding: 14vh var(--margin) 0; }
+.close-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+.invite { grid-column: 1 / span 7; }
+.invite h2 { margin: 0 0 28px; font-size: var(--step-head); font-weight: 600; letter-spacing: -0.045em; line-height: 0.92; }
+.invite .btn { background: var(--accent); color: var(--accent-ink); min-height: 52px; padding: 0 26px; font-size: var(--step-body); }
+.links { grid-column: 10 / span 3; display: grid; gap: 4px; align-content: start; }
+.links a { text-underline-offset: 4px; padding: 6px 0; }
+.links span { margin-top: 18px; font-size: var(--step-small); }
+.wordmark { position: absolute; left: calc(var(--margin) - 1.2vw); bottom: 0; margin: 0; font-size: 28vw; font-weight: 600; letter-spacing: -0.06em; line-height: 0.8; white-space: nowrap; transform: translateY(30%); }
+
+/* ---------- Motion. Everything here is extra: with it switched off the page is already complete. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .skin .word, .js .skin .window, .js .skin .select, .js .skin .say { animation: rise var(--t-reveal) var(--ease-out) both; }
+  .js .skin .word.a { animation-delay: 60ms; }
+  .js .skin .window { animation-delay: 160ms; }
+  .js .skin .select { animation-delay: 260ms; }
+  .js .skin .say { animation-delay: 340ms; }
+  .js .skin .word.b { animation-delay: 420ms; }
+  .bubble.speaking .dots i { animation: dot 560ms ease-in-out infinite; }
+  .bubble.speaking .dots i:nth-child(2) { animation-delay: 110ms; }
+  .bubble.speaking .dots i:nth-child(3) { animation-delay: 220ms; }
+  @keyframes rise { from { opacity: 0; transform: translateY(26px); } }
+  @keyframes dot { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(-5px); } }
+
+  /* About arrives in reading order; the portrait opens like the curtain between worlds. */
+  .js .about [data-rise] { opacity: 0; transform: translateY(22px); }
+  .js .about.in [data-rise] { animation: settle var(--t-reveal) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 80ms); }
+  .js .about-photo .tilt { clip-path: inset(100% 0 0 0); }
+  .js .about-photo img { transform: scale(1.12); }
+  .js .about.in .about-photo .tilt { animation: shutter 1100ms var(--ease-out) 120ms forwards; }
+  .js .about.in .about-photo img { animation: unzoom 1500ms var(--ease-out) 120ms forwards; }
+  @keyframes settle { to { opacity: 1; transform: none; } }
+  @keyframes shutter { to { clip-path: inset(0 0 0 0); } }
+  @keyframes unzoom { to { transform: scale(1); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; }
+}
+
+/* ---------- Short screens: the guide stands beside his words instead of under them. */
+@media (min-width: 1200px) and (max-height: 800px) {
+  .now { flex-direction: row-reverse; justify-content: flex-end; align-items: flex-end; gap: 6px; }
+  .bubble { margin-bottom: 30px; transform-origin: 0 100%; }
+  .bubble::before { left: -10px; bottom: 26px; width: 10px; height: 14px; }
+  .bubble::after { left: -18px; bottom: 30px; }
+  .guide-slot { width: 150px; height: min(170px, 26svh); }
+}
+@media (min-width: 861px) and (max-width: 1199px) and (max-height: 800px) {
+  .guide-slot { display: none; }
+  .bubble::before, .bubble::after { display: none; }
+}
+
+/* ---------- Phones: one column, the guide beside his words, the worlds as a row of names. */
+@media (max-width: 860px) {
+  :root { --margin: 16px; --step-name: 21vw; --frame-w: calc(100vw - 32px); --frame-h: min(calc(var(--frame-w) * 0.625), 27svh); --gap: 12px; }
+  .skin { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto auto; padding: 12px var(--margin) 14px; }
+  .nav { grid-area: 1 / 1; padding: 0; }
+  .nav a:not(.btn) { display: none; }
+  .word.a { grid-area: 2 / 1; }
+  .band { grid-area: 3 / 1; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; gap: 10px; align-content: center; }
+  .say { grid-area: 4 / 1; font-size: var(--step-body); max-width: 15ch; }
+  .say small { display: none; }
+  .word.b { grid-area: 5 / 1; }
+  .window { order: 1; height: calc(var(--frame-h) + 50px); }
+  .now { order: 2; flex-direction: row-reverse; justify-content: flex-end; align-items: flex-end; gap: 4px; }
+  .bubble { max-width: none; flex: 1; margin-bottom: 14px; padding: 12px 14px 14px; transform-origin: 0 100%; }
+  .bubble::before { left: -10px; bottom: 22px; width: 10px; height: 14px; }
+  .bubble::after { left: -18px; bottom: 26px; }
+  .now-line { margin: 4px 0 10px; font-size: 1rem; }
+  .bubble .btn { min-height: 44px; }
+  .guide-slot { width: 100px; height: 124px; }
+  .select { display: none; }
+  .pager { order: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .pager button { min-height: 44px; padding: 0 16px; background: var(--field-ink); color: var(--field); border: 0; font: inherit; font-size: var(--step-small); font-weight: 500; cursor: pointer; transition: transform var(--t-press) var(--ease-out); }
+  .pager button:active { transform: scale(0.96); }
+  .pager button:disabled { visibility: hidden; }
+  .pager span { font-size: var(--step-small); font-variant-numeric: tabular-nums; }
+  .about { display: flex; flex-direction: column; padding: 12vh var(--margin) 12vh; }
+  .about-text { display: contents; }
+  .about-text > * { order: 3; }
+  .about h2 { order: 1; margin-bottom: 28px; }
+  .about-photo { order: 2; position: static; margin: 0 0 32px; }
+  .facts { margin-top: 40px; }
+  .facts.journey { margin-top: 0; }
+  .facts div { grid-template-columns: 96px minmax(0, 1fr); gap: 16px; }
+  .close { padding-top: 10vh; }
+  .invite, .links { grid-column: 1 / -1; }
+  .wordmark { font-size: 34vw; }
+}
+
+/* ---------- Without scripts: no pinning and no guide. The nine worlds are simply listed, each with its words. */
+html:not(.js) .stage { position: static; height: auto; overflow: visible; }
+html:not(.js) .skin { position: relative; display: block; padding-bottom: 12vh; }
+html:not(.js) .nav { position: absolute; top: 18px; right: var(--margin); }
+html:not(.js) .word.b { text-align: left; margin: 0 0 6vh -0.04em; }
+html:not(.js) .band { display: block; }
+html:not(.js) .now, html:not(.js) .guide-layer, html:not(.js) .select, html:not(.js) .pager, html:not(.js) .say small { display: none; }
+html:not(.js) .window { height: auto; overflow: visible; max-width: 900px; }
+html:not(.js) .reel { gap: 56px; }
+html:not(.js) .frame { height: auto; overflow: visible; background: none; text-decoration: none; }
+html:not(.js) .frame img { height: auto; aspect-ratio: 16 / 10; border-radius: 4px; }
+html:not(.js) .cap { display: block; margin-top: 14px; max-width: 52ch; }
+html:not(.js) .cap b { display: block; font-size: var(--step-lead); font-weight: 600; letter-spacing: -0.03em; }
+html:not(.js) .say { margin: 0 0 6vh; }

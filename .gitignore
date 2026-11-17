@@ -1,0 +1,14 @@
+# Working files that are not part of the site: early options, raw screenshots, test captures, tools
+_work/
+
+# Local tool settings and check reports
+.claude/
+.taste-skill/
+inspect.txt
+
+# Editors, systems, packages
+.vscode/
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
